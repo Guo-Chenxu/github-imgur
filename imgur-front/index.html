@@ -153,13 +153,14 @@
     <!-- processImg.js是压缩图片插件，exif.js是矫正图片方向的插件，processImg.js依赖于exif.js，所以exif.js要processImg.js在之前引入 -->
     <script src="src/exif.js"></script>
     <script src="src/processImg.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- 截止 -->
 
     <script type="text/javascript">
         var filechooser = document.getElementById("choose");
 
         //用来存储图片二进制数据
-        var blobFileList;
+        var base64FileList;
         // 用来存储图片名字
         var fileNameList = [];
 
@@ -170,10 +171,10 @@
 
         //上传图片
         document.getElementById('submit').onclick = function () {
-            if (blobFileList) {
-                blobFileList.forEach(function (blobFile, i) {
+            if (base64FileList) {
+                base64FileList.forEach(function (base64File, i) {
                     console.log('正在上传第' + (i + 1) + '张图片')
-                    formUpData(blobFile, i);
+                    formUpData(base64File, i);
                 })
             }
         }
@@ -208,16 +209,7 @@
 
         //获取压缩后的图片
         function getCompressiveFileList(fileList) {
-            blobFileList = fileList;
-            fileList.forEach(function (blob) {
-                var reader = new FileReader();
-                reader.onload = function () {
-                    var li = document.createElement("LI")
-                    li.style.backgroundImage = 'url(' + this.result + ')';
-                    document.querySelector('.imgCompress_list').appendChild(li)
-                }
-                reader.readAsDataURL(blob);
-            })
+            base64FileList = fileList;
         }
 
         //监听上传组件input的onchange事件，压缩图片，纠正图片方向，同时获取压缩后的图片
@@ -233,6 +225,7 @@
                     li.style.backgroundImage = 'url(' + this.result + ')';
                     document.querySelector('.img_list').appendChild(li)
                 }
+                console.log(file.type)
                 reader.readAsDataURL(file);
                 fileNameList.push(file.name);
             });
@@ -243,34 +236,28 @@
         }
 
 
-        //将二进制图片数据流append到formdata对象中上传到后台服务器
-        //注意：上传的是formdata对象，后台接口接收的时候，也要从formdata对象中读取二进制数据流
-        function formUpData(blobFiles, i) {
-            console.log("fileSize: " + blobFiles.size)
-            var formData = new FormData();
+        //将base64图片数据上传到后台服务器
+        function formUpData(base64File, i) {
+            console.log("fileSize: " + base64File.size);
 
-            formData.append("file", blobFiles);
-            formData.append("name", fileNameList[i]);
+            var jsonData = {
+                file: base64File,
+                name: fileNameList[i]
+            };
+            console.log(jsonData);
 
-            var xhr = new XMLHttpRequest();
+            axios.post('https://imgur.chenxutalk.top/api/upload', jsonData)
+                .then(function (response) {
+                    var url = response.data.url;
+                    url = "<img src=\"" + url + "\"/>";
 
-            //链接你自己上传图片接口即可，这里的接口地址，是我写的示例，不可真实使用，讲解意义更大
-            xhr.open('POST', 'https://imgur.chenxutalk.top/api/upload');
-
-            xhr.onreadystatechange = function () {
-                if (xhr.status == 200) {
-                    url = JSON.parse(xhr.responseText)["url"]
-                    url = "<img src=\"" + url + "\"/>"
-
-                    navigator.clipboard.writeText(url)
+                    navigator.clipboard.writeText(url);
                     window.alert('上传成功！');
                     document.getElementById("code-content").textContent = url;
-                } else {
+                })
+                .catch(function (error) {
                     window.alert('上传失败！');
-                }
-            };
-
-            xhr.send(formData);
+                });
         }
     </script>
 </body>

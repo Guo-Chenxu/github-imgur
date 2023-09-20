@@ -16,7 +16,7 @@
 
 
         var Orientation = '', //图片方向角
-            blobList = [], //压缩后的二进制图片数据列表
+            base64List = [], //压缩后的二进制图片数据列表
 
             canvas = document.createElement("canvas"), //用于压缩图片（纠正图片方向）的canvas
             ctx = canvas.getContext('2d'),
@@ -46,8 +46,8 @@
          *        注意：最好不要超过1000，数字过大，容易导致canvas压缩失败。由于没做瓦片处理，所以有这个限制。1000*1000的图片在前端中，基本也够用了。
          *        
          */
-        function process(fileList, getBlobList, quality, WH) {
-            blobList = []; //初始化blobList
+        function process(fileList, getBase64List, quality, WH) {
+            base64List = []; //初始化base64List
             // 判断参数fileList的长度是否大于0
             if (!fileList.length) {
                 console.log('警告：传进方法process的参数fileList长度必须大于零！！！')
@@ -98,13 +98,13 @@
                             }
                         });
 
-                        //将图片转为二进制数据并存入列表中
-                        blobList.push(dataURItoBlob(img.src));
+                        //将图片存入列表中
+                        base64List.push(img.src.split(',')[1]);
 
-                        //将二进制图片数据对象(blob)组成的list通过钩子函数返回出去
-                        if (blobList.length === files.length) {
-                            if (getBlobList)
-                                getBlobList(blobList);
+                        //将图片数据对象组成的list通过钩子函数返回出去
+                        if (base64List.length === files.length) {
+                            if (getBase64List)
+                                getBase64List(base64List);
                         }
 
                         img = null;
@@ -117,29 +117,12 @@
         }
 
         /**
-         * dataURL to blob, ref to https://gist.github.com/fupslot/5015897
-         * @param dataURI,图片的base64格式数据
-         * @returns {Blob}
-         */
-        function dataURItoBlob(dataURI) {
-            var byteString = atob(dataURI.split(',')[1]);
-            var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-            var ab = new ArrayBuffer(byteString.length);
-            var ia = new Uint8Array(ab);
-            for (var i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            return new Blob([ab], { type: mimeString });
-        }
-
-        /**
          * 返回一个process方法
          * 
          * process方法：处理图片数据
          * 
          */
         return process;
-
 
     }
 })(window)
