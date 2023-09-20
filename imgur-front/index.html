@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-    <title>Chenxu's GitHub 图床</title>
+    <title>Chenxu's 图床</title>
     <style>
         * {
             margin: 0;
@@ -138,7 +138,7 @@
     <a id="addImg">添加图片</a>
     <span class="tips">只允许上传jpg、png, 且一次只能上传一张图片</span>
 
-    <div id="submit">提交表单</div>
+    <div id="submit">上传图片</div>
 
     <div class="code-block">
         <pre>
@@ -225,7 +225,6 @@
                     li.style.backgroundImage = 'url(' + this.result + ')';
                     document.querySelector('.img_list').appendChild(li)
                 }
-                console.log(file.type)
                 reader.readAsDataURL(file);
                 fileNameList.push(file.name);
             });
@@ -246,7 +245,12 @@
             };
             console.log(jsonData);
 
-            axios.post('https://imgur.chenxutalk.top/api/upload', jsonData)
+            axios.post('https://imgur.chenxutalk.top/api/upload', jsonData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+            })
                 .then(function (response) {
                     var url = response.data.url;
                     url = "<img src=\"" + url + "\"/>";
@@ -256,7 +260,7 @@
                     document.getElementById("code-content").textContent = url;
                 })
                 .catch(function (error) {
-                    window.alert('上传失败！');
+                    window.alert('上传失败！' + error);
                 });
         }
     </script>

@@ -9,6 +9,7 @@ import (
 
 func SetUpRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(middleware.Cors())
 
 	v1Group := r.Group("api")
 	{
@@ -16,6 +17,5 @@ func SetUpRouter() *gin.Engine {
 		v1Group.POST("/upload", controller.Upload)
 	}
 
-	r.Use(middleware.Cors())
 	return r
 }
