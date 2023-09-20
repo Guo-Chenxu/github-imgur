@@ -1,26 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"imgur-backend/conf"
 	"imgur-backend/router"
-	"fmt"
 	"os"
 )
 
 const defaultConfFile = "./conf/config.ini"
 
 func main() {
-	confFile := defaultConfFile
-	if len(os.Args) > 2 {
-		fmt.Println("use specified conf file: ", os.Args[1])
-		confFile = os.Args[1]
-	} else {
-		fmt.Println("no configuration file was specified, use ./conf/config.ini")
+	confFile, bed := defaultConfFile, ""
+	for i, arg := range os.Args {
+		switch arg {
+		case "-c":
+			confFile = os.Args[i+1]
+		case "-b":
+			bed = os.Args[i+1]
+		}
 	}
+
 	// 加载配置文件
 	if err := conf.Init(confFile); err != nil {
 		fmt.Printf("load config from file failed, err:%v\n", err)
 		return
+	}
+	if bed != "" {
+		conf.Conf.Bed = bed
 	}
 
 	r := router.SetUpRouter()

@@ -38,9 +38,17 @@ func Upload(ctx *gin.Context) {
 	content := base64.StdEncoding.EncodeToString(fileData)
 	postfix := strings.Split(name, ".")
 	filename := time.Now().Format("200601021504050") + "." + postfix[len(postfix)-1]
-	message := conf.Conf.Message
+	
+	url, err := "", nil
+	switch conf.Conf.Bed {
+	case "github":
+		message := conf.Conf.GithubConfig.Message
+		url, err = logic.UploadByGithub(message, filename, content)
+	case "gitee":
+		message := conf.Conf.GiteeConfig.Message
+		url, err = logic.UploadByGitee(message, filename, content)
 
-	err = logic.Upload(message, filename, content)
+	}
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -51,6 +59,6 @@ func Upload(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"status": http.StatusOK,
-		"url":    conf.Conf.CDN + filename,
+		"url":    url,
 	})
 }

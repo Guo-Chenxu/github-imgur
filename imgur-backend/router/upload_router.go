@@ -13,7 +13,7 @@ func SetUpRouter() *gin.Engine {
 	v1Group := r.Group("api")
 	{
 		// 上传图片
-		v1Group.POST("/upload", controller.Upload)
+		v1Group.GET("/upload", controller.Upload)
 	}
 
 	r.Use(middleware.Cors())
