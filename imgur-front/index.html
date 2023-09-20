@@ -158,7 +158,7 @@
     <script type="text/javascript">
         var filechooser = document.getElementById("choose");
 
-        //用来存储压缩后的图片二进制数据
+        //用来存储图片二进制数据
         var blobFileList;
         // 用来存储图片名字
         var fileNameList = [];
@@ -224,7 +224,7 @@
         filechooser.onchange = function () {
             var fileList = this.files;
 
-            //预览压缩前的图片
+            //预览图片
             var files = Array.prototype.slice.call(fileList);
             files.forEach(function (file, i) {
                 var reader = new FileReader();
@@ -243,9 +243,10 @@
         }
 
 
-        //将压缩后的二进制图片数据流append到formdata对象中上传到后台服务器
+        //将二进制图片数据流append到formdata对象中上传到后台服务器
         //注意：上传的是formdata对象，后台接口接收的时候，也要从formdata对象中读取二进制数据流
         function formUpData(blobFiles, i) {
+            console.log("fileSize: " + blobFiles.size)
             var formData = new FormData();
 
             formData.append("file", blobFiles);

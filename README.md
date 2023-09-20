@@ -71,4 +71,4 @@ go build
 
 # 参考
 
-前端参考自: [img_compress_rotate_preview_upload](https://github.com/legend-li/img_compress_rotate_preview_upload)
+前端参考自: [img_compress_rotate_preview_upload](https://github.com/legend-li/img_compress_rotate_preview_upload) _(删除了前端的压缩操作)_
