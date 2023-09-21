@@ -136,7 +136,7 @@
     </ul>
 
     <a id="addImg">添加图片</a>
-    <span class="tips">只允许上传jpg、png, 且一次只能上传一张图片</span>
+    <span class="tips">上传图片大小不能超过<b>1M</b>, 且一次只能上传<b>一张</b>图片</span>
 
     <div id="submit">上传图片</div>
 
@@ -171,6 +171,7 @@
 
         //上传图片
         document.getElementById('submit').onclick = function () {
+            window.alert("正在上传中...")
             if (base64FileList) {
                 base64FileList.forEach(function (base64File, i) {
                     console.log('正在上传第' + (i + 1) + '张图片')
@@ -250,6 +251,7 @@
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*',
                 },
+                timeout: 30000,
             })
                 .then(function (response) {
                     var url = response.data.url;
